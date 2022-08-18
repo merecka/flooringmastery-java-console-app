@@ -1,9 +1,7 @@
 package org.flooringmastery;
 
 import org.flooringmastery.controller.FlooringMasteryController;
-import org.flooringmastery.dao.FlooringMasteryPersistenceException;
-import org.flooringmastery.dao.OrderDao;
-import org.flooringmastery.dao.OrderDaoFileImpl;
+import org.flooringmastery.dao.*;
 import org.flooringmastery.service.FlooringMasteryServiceLayer;
 import org.flooringmastery.ui.FlooringMasteryView;
 import org.flooringmastery.ui.UserIO;
@@ -18,8 +16,12 @@ public class App {
         FlooringMasteryView orderView = new FlooringMasteryView(myIo);
         // Instantiate the OrderDAO
         OrderDao orderDao = new OrderDaoFileImpl();
-        // Instantiate the FlooringMasteryService Layer and wire the DAO into it
-        FlooringMasteryServiceLayer flooringService = new FlooringMasteryServiceLayer(orderDao);
+        // Instantiate the TaxDAO
+        TaxDao taxDao = new TaxDaoFileImpl();
+        // Instantiate the ProductDAO
+        ProductDao productDao = new ProductDaoFileImpl();
+        // Instantiate the FlooringMasteryService Layer and wire the DAOs into it
+        FlooringMasteryServiceLayer flooringService = new FlooringMasteryServiceLayer(orderDao, taxDao, productDao);
         //  Instantiate the Controller and wire the Service Layer into it
         FlooringMasteryController controller = new FlooringMasteryController(orderView, flooringService);
         // Kick off the Controller

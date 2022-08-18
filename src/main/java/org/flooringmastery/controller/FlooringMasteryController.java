@@ -2,10 +2,14 @@ package org.flooringmastery.controller;
 
 import org.flooringmastery.dao.FlooringMasteryPersistenceException;
 import org.flooringmastery.dto.Order;
+import org.flooringmastery.dto.Product;
+import org.flooringmastery.dto.Tax;
 import org.flooringmastery.service.FlooringMasteryServiceLayer;
 import org.flooringmastery.ui.FlooringMasteryView;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FlooringMasteryController {
 
@@ -60,6 +64,15 @@ public class FlooringMasteryController {
         String orderDateToDisplayString = view.displayOrdersPrompt();
         List<Order> allOrders =  service.allOrdersForDate(orderDateToDisplayString);
         view.displayAllOrders(allOrders, orderDateToDisplayString);
+    }
+
+    private void createOrder() throws FlooringMasteryPersistenceException {
+        LocalDate newOrderDate = view.getNewOrderDate();
+        List<Tax> allTaxes = service.getAllTaxes();
+
+        List<String> allTaxStates = allTaxes.stream().map(tax -> tax.getStateAbbreviation()).collect(Collectors.toList());
+        List<Product> allProducts = service.getAllProducts();
+        String newOrderDetails = view.getNewOrderInfo(allTaxStates, allProducts);
     }
 
     private void exitMessage() {
