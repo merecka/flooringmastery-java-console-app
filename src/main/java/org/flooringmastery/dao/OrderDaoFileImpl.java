@@ -27,7 +27,7 @@ public class OrderDaoFileImpl implements OrderDao {
         String formattedDate = newOrder.getOrderDate().format(DateTimeFormatter.ofPattern("MMDDYYYY"));
         loadOrders(formattedDate);
         Order newOrderHashMap = orders.put(newOrder.getOrderNumber(), newOrder);
-        String ordersFileName = "data/Orders_" + formattedDate + ".txt";
+        String ordersFileName = "orders/Orders_" + formattedDate + ".txt";
         writeOrder(ordersFileName);
         return newOrder;
     }
@@ -35,9 +35,9 @@ public class OrderDaoFileImpl implements OrderDao {
     private boolean loadOrders(String orderDate) {
         orders = new HashMap<>();
         Scanner scanner = null;
-        String ordersFileName = "data/Orders_" + orderDate + ".txt";
+        String ordersFileName = "orders/Orders_" + orderDate + ".txt";
         System.out.println(ordersFileName);
-        boolean wasSuccessful = false;
+        boolean wasSuccessful = true;
         try {
             // Create Scanner for reading the file
             scanner = new Scanner(
@@ -45,6 +45,7 @@ public class OrderDaoFileImpl implements OrderDao {
                             new FileReader(ordersFileName)));
         } catch (FileNotFoundException e) {
             System.out.println("No orders exist for this date.");
+            wasSuccessful = false;
         }
 
         if (wasSuccessful == false) {

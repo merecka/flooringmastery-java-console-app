@@ -12,6 +12,7 @@ import java.sql.Array;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -59,7 +60,7 @@ public class FlooringMasteryView {
     public void displayAllOrders(List<Order> allOrders, String orderDate) {
         io.print("* * * * Orders for " + orderDate + " * * * * * * *");
         for (Order currentOrder : allOrders) {
-            String orderInfo = String.format("Order Number: %s - Customer: %s - State: %s - Tax Rate: %s - Product Type: %s - Area: %s - Cost: $%s sq/ft - Labor $%s sq/ft - Material $%s - Labor $%s - Tax: $%s - Total: $%s",
+            String orderInfo = String.format("Order Number %s - Customer: %s - State: %s - Tax Rate: %s - Product Type: %s - Area: %s - Cost: $%s sq/ft - Labor $%s sq/ft - Material $%s - Labor $%s - Tax: $%s - Total: $%s",
                     currentOrder.getOrderNumber(),
                     currentOrder.getCustomerName(),
                     currentOrder.getState(),
@@ -84,43 +85,57 @@ public class FlooringMasteryView {
         boolean keepGoing = false;
         do {
             newOrderDateString = io.readString("Enter the Order date.  Date must be a future date and in the following format (ex: 08/03/2022)").trim();
-            if (checkValidDateFormat((newOrderDateString))) {
-                if (checkDateIsInFuture(newOrderDateString))
-                {
-                    keepGoing = false;
-                } else {
-                    io.readString("Order date must be in the future by at least 1 day from today's date.");
-                    keepGoing = true;
-                }
+            if (checkIsValidDate(newOrderDateString)) {
+                keepGoing = false;
             } else {
                 keepGoing = true;
             }
+//            if (!checkValidDateFormat((newOrderDateString)) ) {
+//                keepGoing = true;
+//                continue;
+//            } else if (!checkDateIsInFuture(newOrderDateString)) {
+//                keepGoing = true;
+//                continue;
+//            }
         } while (keepGoing);
 
         return LocalDate.parse(newOrderDateString, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
     }
 
     private boolean checkValidDateFormat(String userEnteredDate) {
-        final String regex = "\\A[0-1][1-9]/[0-1][1-9]/20\\d\\d\\z";
+        System.out.println("userEnteredDate is " + userEnteredDate);
+        final String regex = "\\A[0-1][1-9]/[0-3][1-9]/20\\d\\d\\z";
 
         final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
         final Matcher matcher = pattern.matcher(userEnteredDate);
+        System.out.println("matcher.find() is" + matcher.find());
         if (matcher.find()) {
             return true;
         } else {
-            displayErrorMessage("Invalid date.  Please use the correct date format.");
+            displayErrorMessage("Invalid date format.  Please use the correct date format.");
             return false;
         }
     }
 
-    private boolean checkDateIsInFuture(String newOrderDateString) {
-        LocalDate newOrderDate = LocalDate.parse(newOrderDateString, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-        LocalDate todayDate = LocalDate.now();
-        int daysDifference = newOrderDate.until(todayDate).getDays();
+    private boolean checkIsValidDate(String newOrderDateString) {
+        String datePattern = "MM/dd/yyyy";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
 
-        if (daysDifference >= 1) {
+        try {
+            LocalDate.parse(newOrderDateString, dateFormatter);
+        } catch (DateTimeParseException e) {
+            displayErrorMessage("Invalid date format.  Please use the correct date format.");
+            return false;
+        }
+
+        LocalDate newOrderDate = LocalDate.parse(newOrderDateString, DateTimeFormatter.ofPattern(datePattern));
+        LocalDate todayDate = LocalDate.now();
+        System.out.println("newOrderDate is: " + newOrderDate);
+        System.out.println("todayDate is: " + todayDate);
+        if (newOrderDate.isAfter(todayDate)) {
             return true;
         } else {
+            displayErrorMessage("Order date must be at least 1 day in the future from today's date, " + todayDate);
             return false;
         }
     }
@@ -207,7 +222,7 @@ public class FlooringMasteryView {
                 io.print("Please enter either 'Y' or 'N' to confirm");
                 keepGoing = true;
             }
-        } while(keepGoing);
+        } while (keepGoing);
         return decision;
     }
 

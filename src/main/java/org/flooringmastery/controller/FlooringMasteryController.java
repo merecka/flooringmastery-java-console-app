@@ -36,7 +36,7 @@ public class FlooringMasteryController {
                     displayOrders();
                     break;
                 case 2:
-//                    addOrder();
+                    addOrder();
                     break;
                 case 3:
 //                    editOrder();
@@ -67,7 +67,7 @@ public class FlooringMasteryController {
         view.displayAllOrders(allOrders, orderDateToDisplayString);
     }
 
-    private void createOrder() throws FlooringMasteryPersistenceException {
+    private void addOrder() throws FlooringMasteryPersistenceException {
 
         // Retrieve info for new Order
         List<Tax> allTaxes = service.getAllTaxes();
@@ -105,7 +105,7 @@ public class FlooringMasteryController {
         newOrder.setTax(newOrderTaxCost);
         newOrder.setTotal(newOrderTotal);
 
-        // Create and persist the new Order
+        // Persist the new Order
         service.createOrder(newOrder);
     }
 
