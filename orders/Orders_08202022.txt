@@ -1,2 +1,0 @@
-OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
-0,Alex,TX,4.45,Laminate,300.0000,1.75,2.10,525.00,630.00,46.20,1201.20,

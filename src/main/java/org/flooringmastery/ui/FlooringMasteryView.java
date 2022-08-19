@@ -62,7 +62,7 @@ public class FlooringMasteryView {
     public void displayAllOrders(List<Order> allOrders, String orderDate) {
         io.print("* * * * Orders for " + orderDate + " * * * * * * *");
         for (Order currentOrder : allOrders) {
-            String orderInfo = String.format("Order Number %s - Customer: %s - State: %s - Tax Rate: %s - Product Type: %s - Area: %s - Cost: $%s sq/ft - Labor $%s sq/ft - Material $%s - Labor $%s - Tax: $%s - Total: $%s",
+            String orderInfo = String.format("Order Number %s - Customer: %s - State: %s - Tax Rate(percent): %s - Product Type: %s - Area: %s sq/ft - CostPerSqFt: $%s sq/ft - LaborCostPerSqFt $%s sq/ft - Material $%s - Labor $%s - Tax: $%s - Total: $%s",
                     currentOrder.getOrderNumber(),
                     currentOrder.getCustomerName(),
                     currentOrder.getState(),
@@ -192,9 +192,9 @@ public class FlooringMasteryView {
 
     public BigDecimal getNewOrderArea() {
         // Get Area for Order
-        Double userAreaEnteredDouble = io.readDouble("Enter the total Area in sq/ft required for the Order: ", 100.00, Double.POSITIVE_INFINITY);
+        Double userAreaEnteredDouble = io.readDouble("Enter the total Area in sq/ft required for the Order (must be 100 sq/ft or GREATER): ", 100.00, Double.POSITIVE_INFINITY);
         String userAreaEnteredString = String.valueOf(userAreaEnteredDouble);
-        return new BigDecimal(userAreaEnteredString).setScale(4, RoundingMode.UNNECESSARY);
+        return new BigDecimal(userAreaEnteredString).setScale(4, RoundingMode.HALF_UP);
     }
 
     public boolean confirmOrder(BigDecimal newOrderTotal) {
