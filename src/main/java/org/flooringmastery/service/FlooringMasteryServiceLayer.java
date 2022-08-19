@@ -28,8 +28,9 @@ public class FlooringMasteryServiceLayer {
         this.productDao = productDao;
     }
 
+
     public List<Order> allOrdersForDate(String orderDate) {
-       return orderDao.getAllOrders(orderDate);
+        return orderDao.getAllOrders(orderDate);
     }
 
     public List<Tax> getAllTaxes() throws FlooringMasteryPersistenceException {
@@ -60,8 +61,13 @@ public class FlooringMasteryServiceLayer {
     public int getNewOrderNumber(LocalDate newOrderDate) {
         String formattedDate = newOrderDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
         System.out.println("formattedDate in service.getNewOrderNumber() is: " + formattedDate);
-        List<Order> allOrders = allOrdersForDate(formattedDate);
-        return allOrders.size();
+        List<Order> allOrders = orderDao.getAllOrders(formattedDate);
+        System.out.println("allOrders.size() is" + allOrders.size());
+        if (allOrders.size() == 0) {
+            return 0;
+        } else {
+            return allOrders.size() + 1;
+        }
     }
 
     public void createOrder(Order newOrder) throws FlooringMasteryPersistenceException {

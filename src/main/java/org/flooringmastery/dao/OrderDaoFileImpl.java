@@ -26,7 +26,7 @@ public class OrderDaoFileImpl implements OrderDao {
     public Order addOrder(Order newOrder) throws FlooringMasteryPersistenceException {
         String formattedDate = newOrder.getOrderDate().format(DateTimeFormatter.ofPattern("MMddyyyy"));
         loadOrders(formattedDate);
-        Order newOrderHashMap = orders.put(newOrder.getOrderNumber(), newOrder);
+        orders.put(newOrder.getOrderNumber(), newOrder);
         String ordersFileName = "orders/Orders_" + formattedDate + ".txt";
         writeOrder(ordersFileName);
         return newOrder;
@@ -122,7 +122,7 @@ public class OrderDaoFileImpl implements OrderDao {
         orderAsText += anOrder.getTax() + DELIMITER;
 
         // Total
-        orderAsText += anOrder.getTotal() + DELIMITER;
+        orderAsText += anOrder.getTotal();
 
         // We have now turned a student to text! Return it!
         return orderAsText;
