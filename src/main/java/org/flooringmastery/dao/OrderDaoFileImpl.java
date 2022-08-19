@@ -207,20 +207,4 @@ public class OrderDaoFileImpl implements OrderDao {
         // Clean up
         out.close();
     }
-
-    public void createNewOrderFile(String orderDate) throws FlooringMasteryPersistenceException {
-        PrintWriter out;
-
-        try {
-            out = new PrintWriter(new FileWriter("orders/Orders_" + orderDate + ".txt"));
-        } catch (IOException e) {
-            throw new FlooringMasteryPersistenceException(
-                    "Could not create Order file.", e);
-        }
-
-        String orderFileHeader = "OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total";
-        out.println(orderFileHeader);
-        out.flush();
-        out.close();
-    }
 }

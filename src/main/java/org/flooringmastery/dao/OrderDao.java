@@ -8,7 +8,5 @@ public interface OrderDao {
 
     public List<Order> getAllOrders(String orderDate);
 
-    public void createNewOrderFile(String orderDate) throws FlooringMasteryPersistenceException;
-
     public Order addOrder(Order newOrder) throws FlooringMasteryPersistenceException;
 }
