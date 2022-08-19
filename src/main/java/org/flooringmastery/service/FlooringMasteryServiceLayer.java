@@ -11,6 +11,7 @@ import org.flooringmastery.dto.Tax;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class FlooringMasteryServiceLayer {
@@ -27,9 +28,8 @@ public class FlooringMasteryServiceLayer {
         this.productDao = productDao;
     }
 
-    public List<Order> allOrdersForDate(String orderDate) throws FlooringMasteryPersistenceException {
-       List<Order> allOrders = orderDao.getAllOrders(orderDate);
-       return allOrders;
+    public List<Order> allOrdersForDate(String orderDate) {
+       return orderDao.getAllOrders(orderDate);
     }
 
     public List<Tax> getAllTaxes() throws FlooringMasteryPersistenceException {
@@ -40,22 +40,30 @@ public class FlooringMasteryServiceLayer {
         return productDao.getAllProducts();
     }
 
-    public BigDecimal calculateTotalOrderCost(Tax newOrderTax, Product newOrderProduct, BigDecimal newOrderArea) {
-        BigDecimal materialCost;
-        BigDecimal laborCost;
-        BigDecimal tax;
-
-        materialCost = newOrderArea.multiply(newOrderProduct.getCostPerSquareFoot()).setScale(2, RoundingMode.HALF_UP);
-        laborCost = newOrderArea.multiply(newOrderProduct.getLaborCostPerSquareFoot()).setScale(2, RoundingMode.HALF_UP);
-
-        BigDecimal taxRate = newOrderTax.getTaxRate().divide(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP);
-        tax = (materialCost.add(laborCost)).multiply(taxRate).setScale(2, RoundingMode.HALF_UP);
-
-        return (materialCost.add(laborCost)).add(tax).setScale(2, RoundingMode.HALF_UP);
+    public BigDecimal calculateOrderMaterialCost(BigDecimal newOrderArea, Product newOrderProduct) {
+        return newOrderArea.multiply(newOrderProduct.getCostPerSquareFoot()).setScale(2, RoundingMode.HALF_UP);
     }
 
-    public void createOrder(LocalDate newOrderDate, String newOrderCustomerName, Tax newOrderTax, Product newOrderProduct, BigDecimal newOrderArea, BigDecimal newOrderTotal) {
+    public BigDecimal calculateOrderLaborCost(BigDecimal newOrderArea, Product newOrderProduct) {
+        return newOrderArea.multiply(newOrderProduct.getLaborCostPerSquareFoot()).setScale(2, RoundingMode.HALF_UP);
+    }
 
-        new Order
+    public BigDecimal calculateOrderTax(Tax newOrderTax, BigDecimal newOrderMaterialCost, BigDecimal newOrderLaborCost) {
+        BigDecimal taxRate = newOrderTax.getTaxRate().divide(new BigDecimal("100"), RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP);
+        return (newOrderMaterialCost.add(newOrderLaborCost)).multiply(taxRate).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal calculateTotalOrderCost(BigDecimal newOrderTax, BigDecimal newOrderMaterialCost, BigDecimal newOrderLaborCost) {
+        return (newOrderMaterialCost.add(newOrderLaborCost)).add(newOrderTax).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public int getNewOrderNumber(LocalDate newOrderDate) {
+        String formattedDate = newOrderDate.format(DateTimeFormatter.ofPattern("MM/DD/YYYY"));
+        List<Order> allOrders = allOrdersForDate(formattedDate);
+        return allOrders.size();
+    }
+
+    public void createOrder(Order newOrder) throws FlooringMasteryPersistenceException {
+        orderDao.addOrder(newOrder);
     }
 }

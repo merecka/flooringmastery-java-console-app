@@ -68,21 +68,45 @@ public class FlooringMasteryController {
     }
 
     private void createOrder() throws FlooringMasteryPersistenceException {
+
+        // Retrieve info for new Order
         List<Tax> allTaxes = service.getAllTaxes();
-//        List<String> allTaxStates = allTaxes.stream().map(tax -> tax.getStateAbbreviation()).collect(Collectors.toList());
         List<Product> allProducts = service.getAllProducts();
         LocalDate newOrderDate = view.getNewOrderDate();
         String newOrderCustomerName = view.getNewOrderCustomerName();
         Tax newOrderTax = view.getNewOrderTax(allTaxes);
         Product newOrderProduct = view.getNewOrderProduct(allProducts);
         BigDecimal newOrderArea = view.getNewOrderArea();
+        BigDecimal newOrderMaterialCost = service.calculateOrderMaterialCost(newOrderArea, newOrderProduct);
+        BigDecimal newOrderLaborCost = service.calculateOrderLaborCost(newOrderArea, newOrderProduct);
+        BigDecimal newOrderTaxCost = service.calculateOrderTax(newOrderTax, newOrderMaterialCost, newOrderLaborCost);
+        BigDecimal newOrderTotal = service.calculateTotalOrderCost(newOrderTaxCost, newOrderMaterialCost, newOrderLaborCost);
+        int newOrderNumber = service.getNewOrderNumber(newOrderDate);
 
-        BigDecimal newOrderTotal = service.calculateTotalOrderCost(newOrderTax, newOrderProduct, newOrderArea);
+        // Confirm Order purchase with User
         boolean newOrderConfirmation = view.confirmOrder(newOrderTotal);
 
-        if (newOrderConfirmation) {
-            service.createOrder(newOrderDate, newOrderCustomerName, newOrderTax, newOrderProduct, newOrderArea, newOrderTotal);
+        if (newOrderConfirmation == false) {
+            return;   // Cancel the Order and return to main menu
         }
+
+        // Create new Order object
+        Order newOrder = new Order(newOrderNumber);
+        newOrder.setOrderDate(newOrderDate);
+        newOrder.setCustomerName(newOrderCustomerName);
+        newOrder.setState(newOrderTax.getStateAbbreviation());
+        newOrder.setTaxRate(newOrderTax.getTaxRate());
+        newOrder.setProductType(newOrderProduct.getProductType());
+        newOrder.setArea(newOrderArea);
+        newOrder.setCostPerSquareFoot(newOrderProduct.getCostPerSquareFoot());
+        newOrder.setLaborCostPerSquareFoot(newOrderProduct.getLaborCostPerSquareFoot());
+        newOrder.setMaterialCost(newOrderMaterialCost);
+        newOrder.setLaborCost(newOrderLaborCost);
+        newOrder.setTax(newOrderTaxCost);
+        newOrder.setTotal(newOrderTotal);
+
+        // Create and persist the new Order
+        service.createOrder(newOrder);
     }
 
     private void exitMessage() {
