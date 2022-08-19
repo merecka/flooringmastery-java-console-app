@@ -7,6 +7,7 @@ import org.flooringmastery.dto.Tax;
 import org.flooringmastery.service.FlooringMasteryServiceLayer;
 import org.flooringmastery.ui.FlooringMasteryView;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,12 +68,21 @@ public class FlooringMasteryController {
     }
 
     private void createOrder() throws FlooringMasteryPersistenceException {
-        LocalDate newOrderDate = view.getNewOrderDate();
         List<Tax> allTaxes = service.getAllTaxes();
-
-        List<String> allTaxStates = allTaxes.stream().map(tax -> tax.getStateAbbreviation()).collect(Collectors.toList());
+//        List<String> allTaxStates = allTaxes.stream().map(tax -> tax.getStateAbbreviation()).collect(Collectors.toList());
         List<Product> allProducts = service.getAllProducts();
-        String newOrderDetails = view.getNewOrderInfo(allTaxStates, allProducts);
+        LocalDate newOrderDate = view.getNewOrderDate();
+        String newOrderCustomerName = view.getNewOrderCustomerName();
+        Tax newOrderTax = view.getNewOrderTax(allTaxes);
+        Product newOrderProduct = view.getNewOrderProduct(allProducts);
+        BigDecimal newOrderArea = view.getNewOrderArea();
+
+        BigDecimal newOrderTotal = service.calculateTotalOrderCost(newOrderTax, newOrderProduct, newOrderArea);
+        boolean newOrderConfirmation = view.confirmOrder(newOrderTotal);
+
+        if (newOrderConfirmation) {
+            service.createOrder(newOrderDate, newOrderCustomerName, newOrderTax, newOrderProduct, newOrderArea, newOrderTotal);
+        }
     }
 
     private void exitMessage() {
