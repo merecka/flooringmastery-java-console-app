@@ -22,6 +22,8 @@ public class FlooringMasteryView {
 
     private UserIO io;
 
+    public final String DATE_FORMAT = "MM/dd/yyyy";
+
     public FlooringMasteryView(UserIO userIO) {
         this.io = userIO;
     }
@@ -85,50 +87,37 @@ public class FlooringMasteryView {
         boolean keepGoing = false;
         do {
             newOrderDateString = io.readString("Enter the Order date.  Date must be a future date and in the following format (ex: 08/03/2022)").trim();
-            if (checkIsValidDate(newOrderDateString)) {
+            if (checkValidDateFormat(newOrderDateString)) {
                 keepGoing = false;
             } else {
                 keepGoing = true;
+                continue;
             }
-//            if (!checkValidDateFormat((newOrderDateString)) ) {
-//                keepGoing = true;
-//                continue;
-//            } else if (!checkDateIsInFuture(newOrderDateString)) {
-//                keepGoing = true;
-//                continue;
-//            }
+
+            if (checkIsFutureDate((newOrderDateString)) ) {
+                keepGoing = false;
+            } else {
+                keepGoing = true;
+                continue;
+            }
         } while (keepGoing);
 
-        return LocalDate.parse(newOrderDateString, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+        return LocalDate.parse(newOrderDateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
     }
 
-    private boolean checkValidDateFormat(String userEnteredDate) {
-        System.out.println("userEnteredDate is " + userEnteredDate);
-        final String regex = "\\A[0-1][1-9]/[0-3][1-9]/20\\d\\d\\z";
-
-        final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-        final Matcher matcher = pattern.matcher(userEnteredDate);
-        System.out.println("matcher.find() is" + matcher.find());
-        if (matcher.find()) {
-            return true;
-        } else {
-            displayErrorMessage("Invalid date format.  Please use the correct date format.");
-            return false;
-        }
-    }
-
-    private boolean checkIsValidDate(String newOrderDateString) {
-        String datePattern = "MM/dd/yyyy";
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
-
+    private boolean checkValidDateFormat(String newOrderDateString) {
+        DateTimeFormatter datePattern = DateTimeFormatter.ofPattern(DATE_FORMAT);
         try {
-            LocalDate.parse(newOrderDateString, dateFormatter);
+            LocalDate.parse(newOrderDateString, datePattern);
         } catch (DateTimeParseException e) {
             displayErrorMessage("Invalid date format.  Please use the correct date format.");
             return false;
         }
+        return true;
+    }
 
-        LocalDate newOrderDate = LocalDate.parse(newOrderDateString, DateTimeFormatter.ofPattern(datePattern));
+    private boolean checkIsFutureDate(String newOrderDateString) {
+        LocalDate newOrderDate = LocalDate.parse(newOrderDateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
         LocalDate todayDate = LocalDate.now();
         System.out.println("newOrderDate is: " + newOrderDate);
         System.out.println("todayDate is: " + todayDate);
