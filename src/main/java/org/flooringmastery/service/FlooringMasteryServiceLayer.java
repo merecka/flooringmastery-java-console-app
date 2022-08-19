@@ -58,7 +58,8 @@ public class FlooringMasteryServiceLayer {
     }
 
     public int getNewOrderNumber(LocalDate newOrderDate) {
-        String formattedDate = newOrderDate.format(DateTimeFormatter.ofPattern("MM/DD/YYYY"));
+        String formattedDate = newOrderDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+        System.out.println("formattedDate in service.getNewOrderNumber() is: " + formattedDate);
         List<Order> allOrders = allOrdersForDate(formattedDate);
         return allOrders.size();
     }

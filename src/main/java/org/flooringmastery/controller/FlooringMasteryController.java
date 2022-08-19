@@ -68,11 +68,13 @@ public class FlooringMasteryController {
     }
 
     private void addOrder() throws FlooringMasteryPersistenceException {
+        int newOrderNumber;
 
         // Retrieve info for new Order
         List<Tax> allTaxes = service.getAllTaxes();
         List<Product> allProducts = service.getAllProducts();
         LocalDate newOrderDate = view.getNewOrderDate();
+        System.out.println("newOrderDate in controller.addOrder() is: " + newOrderDate);
         String newOrderCustomerName = view.getNewOrderCustomerName();
         Tax newOrderTax = view.getNewOrderTax(allTaxes);
         Product newOrderProduct = view.getNewOrderProduct(allProducts);
@@ -81,7 +83,10 @@ public class FlooringMasteryController {
         BigDecimal newOrderLaborCost = service.calculateOrderLaborCost(newOrderArea, newOrderProduct);
         BigDecimal newOrderTaxCost = service.calculateOrderTax(newOrderTax, newOrderMaterialCost, newOrderLaborCost);
         BigDecimal newOrderTotal = service.calculateTotalOrderCost(newOrderTaxCost, newOrderMaterialCost, newOrderLaborCost);
-        int newOrderNumber = service.getNewOrderNumber(newOrderDate);
+        newOrderNumber = service.getNewOrderNumber(newOrderDate);
+        if (newOrderNumber == 0) {
+            newOrderNumber = 1;
+        }
 
         // Confirm Order purchase with User
         boolean newOrderConfirmation = view.confirmOrder(newOrderTotal);

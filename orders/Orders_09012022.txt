@@ -1,0 +1,2 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
+1,William,TX,4.45,Wood,300.0000,5.15,4.75,1545.00,1425.00,118.80,3088.80,
