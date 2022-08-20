@@ -15,7 +15,6 @@ public class OrderDaoFileImpl implements OrderDao {
 
     public List<Order> getAllOrders(String orderDate) {
         String orderDateFormatted = orderDate.replace("/", "");
-        System.out.println("orderDateFormatted in orderdao.getAllOrders() is: " + orderDateFormatted);
         if (loadOrders(orderDateFormatted)) {
             return new ArrayList<>(orders.values());
         } else {
@@ -33,11 +32,9 @@ public class OrderDaoFileImpl implements OrderDao {
     }
 
     private boolean loadOrders(String orderDate) {
-        System.out.println("orderDate in loadOrders is: " + orderDate);
         orders = new HashMap<>();
         Scanner scanner = null;
         String ordersFileName = "orders/Orders_" + orderDate + ".txt";
-        System.out.println(ordersFileName);
         boolean wasSuccessful = true;
         try {
             // Create Scanner for reading the file

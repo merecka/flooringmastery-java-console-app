@@ -74,7 +74,6 @@ public class FlooringMasteryController {
         List<Tax> allTaxes = service.getAllTaxes();
         List<Product> allProducts = service.getAllProducts();
         LocalDate newOrderDate = view.getNewOrderDate();
-        System.out.println("newOrderDate in controller.addOrder() is: " + newOrderDate);
         String newOrderCustomerName = view.getNewOrderCustomerName();
         Tax newOrderTax = view.getNewOrderTax(allTaxes);
         Product newOrderProduct = view.getNewOrderProduct(allProducts);

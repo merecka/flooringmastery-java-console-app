@@ -119,8 +119,6 @@ public class FlooringMasteryView {
     private boolean checkIsFutureDate(String newOrderDateString) {
         LocalDate newOrderDate = LocalDate.parse(newOrderDateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
         LocalDate todayDate = LocalDate.now();
-        System.out.println("newOrderDate is: " + newOrderDate);
-        System.out.println("todayDate is: " + todayDate);
         if (newOrderDate.isAfter(todayDate)) {
             return true;
         } else {
@@ -145,6 +143,10 @@ public class FlooringMasteryView {
     }
 
     private boolean checkValidCustomerNameFormat(String userEnteredName) {
+        if (userEnteredName.length() < 1) {
+            displayErrorMessage("Invalid name.  Please only use letters, numbers 0-9, and periods & commas.");
+            return false;
+        }
         final String regex = "\\A[a-zA-Z\\d.,\\s]*\\z";
 
         final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
@@ -162,7 +164,6 @@ public class FlooringMasteryView {
         int userStateSelectionInt;
 
         // Get State for Order
-        io.print("Please select the State for the Order from the following States:");
         int countStates = 0;
         for (Tax tax : allTaxes) {
             String states = String.format("%s. %s",
@@ -170,7 +171,7 @@ public class FlooringMasteryView {
                     tax.getStateName());
             io.print(states);
         }
-        userStateSelectionInt = io.readInt("", 1, countStates);
+        userStateSelectionInt = io.readInt("Please select the State for the Order from the following States:", 1, countStates);
         return allTaxes.get(--userStateSelectionInt);
     }
 
@@ -178,7 +179,6 @@ public class FlooringMasteryView {
         int userProductSelectionInt;
 
         // Get Product for Order
-        io.print("Please select from the following Products:");
         int countProducts = 0;
         for (Product product : allProducts) {
             String products = String.format("%s. %s",
@@ -186,7 +186,7 @@ public class FlooringMasteryView {
                     product.getProductType());
             io.print(products);
         }
-        userProductSelectionInt = io.readInt("", 1, countProducts);
+        userProductSelectionInt = io.readInt("Please select from the following Products:", 1, countProducts);
         return allProducts.get(--userProductSelectionInt);
     }
 
@@ -204,11 +204,13 @@ public class FlooringMasteryView {
         do {
             String userConfirmSelection = io.readString("Would you like to submit the order?  Type 'Y' for Yes or 'N' for No");
             if (userConfirmSelection.equalsIgnoreCase("y")) {
+                io.print("Order created successfully.");
                 decision = true;
+                keepGoing = false;
             } else if (userConfirmSelection.equalsIgnoreCase("n")) {
                 decision = false;
+                keepGoing = false;
             } else {
-                io.print("Please enter either 'Y' or 'N' to confirm");
                 keepGoing = true;
             }
         } while (keepGoing);
