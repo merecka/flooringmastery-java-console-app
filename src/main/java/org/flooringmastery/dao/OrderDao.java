@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface OrderDao {
 
-    public List<Order> getAllOrders(String orderDate) throws FlooringMasteryPersistenceException;
+    public List<Order> getAllOrders(String orderDate);
+
+    public Order addOrder(Order newOrder) throws FlooringMasteryPersistenceException;
 }

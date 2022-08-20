@@ -1,8 +1,11 @@
 package org.flooringmastery.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class Order {
+
+    private LocalDate orderDate;
     private int orderNumber;
 
     private String customerName;
@@ -27,19 +30,16 @@ public class Order {
 
     private BigDecimal total;
 
-    public Order(int orderNumber, String customerName, String state, BigDecimal taxRate, String productType, BigDecimal area, BigDecimal costPerSquareFoot, BigDecimal laborCostPerSquareFoot, BigDecimal materialCost, BigDecimal laborCost, BigDecimal tax, BigDecimal total) {
+    public Order(int orderNumber) {
         this.orderNumber = orderNumber;
-        this.customerName = customerName;
-        this.state = state;
-        this.taxRate = taxRate;
-        this.productType = productType;
-        this.area = area;
-        this.costPerSquareFoot = costPerSquareFoot;
-        this.laborCostPerSquareFoot = laborCostPerSquareFoot;
-        this.materialCost = materialCost;
-        this.laborCost = laborCost;
-        this.tax = tax;
-        this.total = total;
+    }
+
+    public LocalDate getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDate orderDate) {
+        this.orderDate = orderDate;
     }
 
     public int getOrderNumber() {
