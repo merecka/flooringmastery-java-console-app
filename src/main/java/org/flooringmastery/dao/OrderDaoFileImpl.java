@@ -4,6 +4,7 @@ import org.flooringmastery.dto.Order;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -203,5 +204,12 @@ public class OrderDaoFileImpl implements OrderDao {
         }
         // Clean up
         out.close();
+    }
+
+    public Order retrieveOrder(int orderNumber, String orderDate) {
+        loadOrders(orderDate);
+
+
+
     }
 }

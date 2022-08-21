@@ -81,6 +81,7 @@ public class FlooringMasteryView {
 
     public LocalDate getNewOrderDate() {
         io.print("* * * * Create New Order * * * * * * *");
+        io.print("");
         String newOrderDateString;
 
         // Get new Order date
@@ -94,7 +95,7 @@ public class FlooringMasteryView {
                 continue;
             }
 
-            if (checkIsFutureDate((newOrderDateString)) ) {
+            if (checkIsFutureDate((newOrderDateString))) {
                 keepGoing = false;
             } else {
                 keepGoing = true;
@@ -127,13 +128,16 @@ public class FlooringMasteryView {
         }
     }
 
-    public String getNewOrderCustomerName() {
+    public String getNewOrderCustomerName(boolean isEditOrder) {
         // Get Customer name
         String newOrderCustomerName;
         boolean keepGoing = false;
         do {
             newOrderCustomerName = io.readString("Enter the Customer name for the order.").trim();
-            if (checkValidCustomerNameFormat((newOrderCustomerName))) {
+            if (isEditOrder && newOrderCustomerName.trim().equals("")) {
+                return "";
+            }
+            if (checkValidCustomerNameFormat(newOrderCustomerName, isEditOrder)) {
                 keepGoing = false;
             } else {
                 keepGoing = true;
@@ -142,9 +146,9 @@ public class FlooringMasteryView {
         return newOrderCustomerName;
     }
 
-    private boolean checkValidCustomerNameFormat(String userEnteredName) {
-        if (userEnteredName.length() < 1) {
-            displayErrorMessage("Invalid name.  Please only use letters, numbers 0-9, and periods & commas.");
+    private boolean checkValidCustomerNameFormat(String userEnteredName, boolean isEdit) {
+        if (!isEdit && userEnteredName.length() < 1) {
+            displayErrorMessage("Customer name cannot be blank.");
             return false;
         }
         final String regex = "\\A[a-zA-Z\\d.,\\s]*\\z";
@@ -160,7 +164,6 @@ public class FlooringMasteryView {
     }
 
     public Tax getNewOrderTax(List<Tax> allTaxes) {
-        Tax userSelectedTax;
         int userStateSelectionInt;
 
         // Get State for Order
@@ -215,6 +218,68 @@ public class FlooringMasteryView {
             }
         } while (keepGoing);
         return decision;
+    }
+
+    public LocalDate getEditOrderDate() {
+        io.print("* * * * Edit Order * * * * * * *");
+        io.print("");
+        String editOrderDateString;
+
+        // Get edit Order date
+        boolean keepGoing = false;
+        do {
+            editOrderDateString = io.readString("Enter the Order date.  Date must be in the following format (ex: 08/03/2022)").trim();
+            if (checkValidDateFormat(editOrderDateString)) {
+                keepGoing = false;
+            } else {
+                keepGoing = true;
+                continue;
+            }
+
+            if (checkIsFutureDate((editOrderDateString))) {
+                keepGoing = false;
+            } else {
+                keepGoing = true;
+                continue;
+            }
+        } while (keepGoing);
+
+        return LocalDate.parse(editOrderDateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
+    }
+
+    public int getEditOrderNumber() {
+        return io.readInt("Please enter the Order number you wish to edit.", 1, 99999999);
+    }
+
+    public Tax getEditOrderTax(List<Tax> allTaxes) throws NullPointerException, NumberFormatException {
+        String userStateSelectionString;
+        boolean keepGoing = false;
+        Tax editedTax = null;
+
+        do {
+            // Get State for Order
+            int countStates = 0;
+            for (Tax tax : allTaxes) {
+                String states = String.format("%s. %s",
+                        ++countStates,
+                        tax.getStateName());
+                io.print(states);
+            }
+            userStateSelectionString = io.readString("Please select the State for the Order from the following States:");
+            try {
+                int userStateSelectionInt = Integer.parseInt(userStateSelectionString);
+                if (userStateSelectionInt < 1 || userStateSelectionInt > allTaxes.size()) {
+                    io.print("You must either make a selection from the list or hit Enter to keep the existing State.");
+                    keepGoing = true;
+                } else {
+                    editedTax = allTaxes.get(--userStateSelectionInt);
+                    keepGoing = false;
+                }
+            } catch (NullPointerException | NumberFormatException e) {
+                keepGoing = false;
+            }
+        } while (keepGoing);
+        return editedTax;
     }
 
     public void displayErrorMessage(String errorMsg) {

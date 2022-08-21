@@ -13,6 +13,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FlooringMasteryServiceLayer {
 
@@ -27,7 +28,6 @@ public class FlooringMasteryServiceLayer {
         this.taxDao = taxDao;
         this.productDao = productDao;
     }
-
 
     public List<Order> allOrdersForDate(String orderDate) {
         return orderDao.getAllOrders(orderDate);
@@ -70,5 +70,11 @@ public class FlooringMasteryServiceLayer {
 
     public void createOrder(Order newOrder) throws FlooringMasteryPersistenceException {
         orderDao.addOrder(newOrder);
+    }
+
+    public Order retrieveOrderToEdit(int orderNumber, LocalDate orderDate) {
+        String formattedDate = orderDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+        List<Order> allOrdersForEditDate = orderDao.getAllOrders(formattedDate);
+        return allOrdersForEditDate.stream().filter(order -> order.getOrderNumber() == orderNumber).findAny().get();
     }
 }
