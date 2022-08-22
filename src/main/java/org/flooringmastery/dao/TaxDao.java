@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface TaxDao {
 
-    public List<Tax> getAllTaxes() throws FlooringMasteryPersistenceException;
+    List<Tax> getAllTaxes() throws FlooringMasteryPersistenceException;
+
+    Tax getIndividualTax(String stateAbbrev) throws FlooringMasteryPersistenceException;
 }

@@ -1,6 +1,8 @@
 package org.flooringmastery.dao;
 
 import org.flooringmastery.dto.Order;
+import org.flooringmastery.dto.Product;
+import org.flooringmastery.dto.Tax;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -13,7 +15,11 @@ public class OrderDaoFileImpl implements OrderDao {
 
     private Map<Integer, Order> orders = new HashMap<>();
 
-    public List<Order> getAllOrders(String orderDate) {
+    private TaxDao taxDao = new TaxDaoFileImpl();
+
+    private ProductDao productDao = new ProductDaoFileImpl();
+
+    public List<Order> getAllOrders(String orderDate) throws FlooringMasteryPersistenceException {
         String orderDateFormatted = orderDate.replace("/", "");
         if (loadOrders(orderDateFormatted)) {
             return new ArrayList<>(orders.values());
@@ -24,14 +30,13 @@ public class OrderDaoFileImpl implements OrderDao {
 
     public Order addOrder(Order newOrder) throws FlooringMasteryPersistenceException {
         String formattedDate = newOrder.getOrderDate().format(DateTimeFormatter.ofPattern("MMddyyyy"));
-        loadOrders(formattedDate);
         orders.put(newOrder.getOrderNumber(), newOrder);
         String ordersFileName = "orders/Orders_" + formattedDate + ".txt";
         writeOrder(ordersFileName);
         return newOrder;
     }
 
-    private boolean loadOrders(String orderDate) {
+    private boolean loadOrders(String orderDate) throws FlooringMasteryPersistenceException {
         orders = new HashMap<>();
         Scanner scanner = null;
         String ordersFileName = "orders/Orders_" + orderDate + ".txt";
@@ -42,7 +47,7 @@ public class OrderDaoFileImpl implements OrderDao {
                     new BufferedReader(
                             new FileReader(ordersFileName)));
         } catch (FileNotFoundException e) {
-            System.out.println("No orders exist for this date.");
+            System.out.println("No orders exist for this date or a new Order date was created.");
             wasSuccessful = false;
         }
 
@@ -92,22 +97,22 @@ public class OrderDaoFileImpl implements OrderDao {
         orderAsText += anOrder.getCustomerName() + DELIMITER;
 
         // State
-        orderAsText += anOrder.getState() + DELIMITER;
+        orderAsText += anOrder.getTax().getStateAbbreviation() + DELIMITER;
 
         // TaxRate
-        orderAsText += anOrder.getTaxRate() + DELIMITER;
+        orderAsText += anOrder.getTax().getTaxRate() + DELIMITER;
 
         // ProductType
-        orderAsText += anOrder.getProductType() + DELIMITER;
+        orderAsText += anOrder.getProduct().getProductType() + DELIMITER;
 
         // Area
         orderAsText += anOrder.getArea() + DELIMITER;
 
         // CostPerSqFoot
-        orderAsText += anOrder.getCostPerSquareFoot() + DELIMITER;
+        orderAsText += anOrder.getProduct().getCostPerSquareFoot() + DELIMITER;
 
         // LaborCostPerSqFoot
-        orderAsText += anOrder.getLaborCostPerSquareFoot() + DELIMITER;
+        orderAsText += anOrder.getProduct().getLaborCostPerSquareFoot() + DELIMITER;
 
         // MaterialCost
         orderAsText += anOrder.getMaterialCost() + DELIMITER;
@@ -116,16 +121,16 @@ public class OrderDaoFileImpl implements OrderDao {
         orderAsText += anOrder.getLaborCost() + DELIMITER;
 
         // Tax
-        orderAsText += anOrder.getTax() + DELIMITER;
+        orderAsText += anOrder.getTaxTotal() + DELIMITER;
 
         // Total
-        orderAsText += anOrder.getTotal();
+        orderAsText += anOrder.getTotalCost();
 
         // We have now turned a student to text! Return it!
         return orderAsText;
     }
 
-    private Order unmarshallOrder(String orderAsText){
+    private Order unmarshallOrder(String orderAsText) throws FlooringMasteryPersistenceException {
         // Creates Order from String
         // Parses Item into String Array like the following:
         // id::name::count::price
@@ -141,30 +146,28 @@ public class OrderDaoFileImpl implements OrderDao {
 
         int orderNumber = Integer.parseInt(orderTokens[0]);
         String customerName = orderTokens[1];
-        String state = orderTokens[2];
-        BigDecimal taxRate = new BigDecimal(orderTokens[3]);
+        String stateAbbrev = orderTokens[2];
         String productType = orderTokens[4];
         BigDecimal area = new BigDecimal(orderTokens[5]);
-        BigDecimal costPerSquareFoot = new BigDecimal(orderTokens[6]);
-        BigDecimal laborCostPerSquareFoot = new BigDecimal(orderTokens[7]);
         BigDecimal materialCost = new BigDecimal(orderTokens[8]);
         BigDecimal laborCost = new BigDecimal(orderTokens[9]);
         BigDecimal tax = new BigDecimal(orderTokens[10]);
         BigDecimal total = new BigDecimal(orderTokens[11]);
 
+        Tax newOrderTax = taxDao.getIndividualTax(stateAbbrev);
+        Product newOrderProduct = productDao.getIndividualProduct(productType);
 
-        Order newOrderFromFile = new Order(orderNumber);
+
+        Order newOrderFromFile = new Order();
+        newOrderFromFile.setOrderNumber(orderNumber);
         newOrderFromFile.setCustomerName(customerName);
-        newOrderFromFile.setState(state);
-        newOrderFromFile.setTaxRate(taxRate);
-        newOrderFromFile.setProductType(productType);
+        newOrderFromFile.setTax(newOrderTax);
+        newOrderFromFile.setProduct(newOrderProduct);
         newOrderFromFile.setArea(area);
-        newOrderFromFile.setCostPerSquareFoot(costPerSquareFoot);
-        newOrderFromFile.setLaborCostPerSquareFoot(laborCostPerSquareFoot);
         newOrderFromFile.setMaterialCost(materialCost);
         newOrderFromFile.setLaborCost(laborCost);
-        newOrderFromFile.setTax(tax);
-        newOrderFromFile.setTotal(total);
+        newOrderFromFile.setTaxTotal(tax);
+        newOrderFromFile.setTotalCost(total);
 
         // Return new Order
         return newOrderFromFile;
@@ -204,4 +207,8 @@ public class OrderDaoFileImpl implements OrderDao {
         // Clean up
         out.close();
     }
+
+//    public Order retrieveOrder(int orderNumber, String orderDate) {
+//        loadOrders(orderDate);
+//    }
 }

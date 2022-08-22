@@ -1,6 +1,7 @@
 package org.flooringmastery.dao;
 
 import org.flooringmastery.dto.Product;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -19,15 +20,19 @@ public class ProductDaoFileImpl implements ProductDao {
         return new ArrayList<>(products.values());
     }
 
+    public Product getIndividualProduct(String productType) throws FlooringMasteryPersistenceException {
+        loadProducts();
+        return products.get(productType);
+    }
+
     private void loadProducts() throws FlooringMasteryPersistenceException {
         Scanner scanner;
-        String productsFileName = PRODUCTS_FILE;
 
         try {
             // Create Scanner for reading the file
             scanner = new Scanner(
                     new BufferedReader(
-                            new FileReader(productsFileName)));
+                            new FileReader(PRODUCTS_FILE)));
         } catch (FileNotFoundException e) {
             throw new FlooringMasteryPersistenceException(
                     "-_- Could not load Products data into memory.", e);
@@ -66,9 +71,7 @@ public class ProductDaoFileImpl implements ProductDao {
         BigDecimal costPerSquareFoot = new BigDecimal(productTokens[1]);
         BigDecimal laborCostPerSquareFoot = new BigDecimal(productTokens[2]);
 
-        Product newProductFromFile = new Product(productType, costPerSquareFoot, laborCostPerSquareFoot);
-
         // Return new Product
-        return newProductFromFile;
+        return new Product(productType, costPerSquareFoot, laborCostPerSquareFoot);
     }
 }
