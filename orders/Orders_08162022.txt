@@ -1,2 +1,0 @@
-OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
-1,Jim Johnson,TX,18.00,Marble,300.00,4.75,5.65,1000.50,2054.35,602.21,4565.06

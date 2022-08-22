@@ -1,19 +1,14 @@
 package org.flooringmastery.ui;
 
-import org.flooringmastery.dao.ProductDao;
 import org.flooringmastery.dto.Order;
 import org.flooringmastery.dto.Product;
 import org.flooringmastery.dto.Tax;
 
-import javax.print.attribute.standard.OrientationRequested;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Array;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,6 +16,8 @@ import java.util.regex.Pattern;
 public class FlooringMasteryView {
 
     private UserIO io;
+
+    private Order newOrder;
 
     public final String DATE_FORMAT = "MM/dd/yyyy";
 
@@ -65,21 +62,21 @@ public class FlooringMasteryView {
             String orderInfo = String.format("Order Number %s - Customer: %s - State: %s - Tax Rate(percent): %s - Product Type: %s - Area: %s sq/ft - CostPerSqFt: $%s sq/ft - LaborCostPerSqFt $%s sq/ft - Material $%s - Labor $%s - Tax: $%s - Total: $%s",
                     currentOrder.getOrderNumber(),
                     currentOrder.getCustomerName(),
-                    currentOrder.getState(),
-                    currentOrder.getTaxRate(),
-                    currentOrder.getProductType(),
+                    currentOrder.getTax().getStateName(),
+                    currentOrder.getTax().getTaxRate(),
+                    currentOrder.getProduct().getProductType(),
                     currentOrder.getArea(),
-                    currentOrder.getCostPerSquareFoot(),
-                    currentOrder.getLaborCostPerSquareFoot(),
+                    currentOrder.getProduct().getCostPerSquareFoot(),
+                    currentOrder.getProduct().getLaborCostPerSquareFoot(),
                     currentOrder.getMaterialCost(),
                     currentOrder.getLaborCost(),
-                    currentOrder.getTax(),
-                    currentOrder.getTotal());
+                    currentOrder.getTaxTotal(),
+                    currentOrder.getTotalCost());
             io.print(orderInfo);
         }
     }
 
-    public LocalDate getNewOrderDate() {
+    public Order startNewOrder() {
         io.print("* * * * Create New Order * * * * * * *");
         io.print("");
         String newOrderDateString;
@@ -99,11 +96,13 @@ public class FlooringMasteryView {
                 keepGoing = false;
             } else {
                 keepGoing = true;
-                continue;
             }
         } while (keepGoing);
 
-        return LocalDate.parse(newOrderDateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
+        LocalDate newOrderDate = LocalDate.parse(newOrderDateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
+        newOrder = new Order();
+        newOrder.setOrderDate(newOrderDate);
+        return newOrder;
     }
 
     private boolean checkValidDateFormat(String newOrderDateString) {
@@ -128,14 +127,14 @@ public class FlooringMasteryView {
         }
     }
 
-    public String getNewOrderCustomerName(boolean isEditOrder) {
+    public void getNewOrderCustomerName(boolean isEditOrder) {
         // Get Customer name
         String newOrderCustomerName;
         boolean keepGoing = false;
         do {
             newOrderCustomerName = io.readString("Enter the Customer name for the order.").trim();
             if (isEditOrder && newOrderCustomerName.trim().equals("")) {
-                return "";
+                return;
             }
             if (checkValidCustomerNameFormat(newOrderCustomerName, isEditOrder)) {
                 keepGoing = false;
@@ -143,7 +142,7 @@ public class FlooringMasteryView {
                 keepGoing = true;
             }
         } while (keepGoing);
-        return newOrderCustomerName;
+        newOrder.setCustomerName(newOrderCustomerName);
     }
 
     private boolean checkValidCustomerNameFormat(String userEnteredName, boolean isEdit) {
@@ -163,8 +162,9 @@ public class FlooringMasteryView {
         }
     }
 
-    public Tax getNewOrderTax(List<Tax> allTaxes) {
+    public void getNewOrderTax(List<Tax> allTaxes) {
         int userStateSelectionInt;
+        Tax newOrderTax;
 
         // Get State for Order
         int countStates = 0;
@@ -175,11 +175,13 @@ public class FlooringMasteryView {
             io.print(states);
         }
         userStateSelectionInt = io.readInt("Please select the State for the Order from the following States:", 1, countStates);
-        return allTaxes.get(--userStateSelectionInt);
+        newOrderTax = allTaxes.get(--userStateSelectionInt);
+        newOrder.setTax(newOrderTax);
     }
 
-    public Product getNewOrderProduct(List<Product> allProducts) {
+    public void getNewOrderProduct(List<Product> allProducts) {
         int userProductSelectionInt;
+        Product newOrderProduct;
 
         // Get Product for Order
         int countProducts = 0;
@@ -190,18 +192,21 @@ public class FlooringMasteryView {
             io.print(products);
         }
         userProductSelectionInt = io.readInt("Please select from the following Products:", 1, countProducts);
-        return allProducts.get(--userProductSelectionInt);
+        newOrderProduct = allProducts.get(--userProductSelectionInt);
+        newOrder.setProduct(newOrderProduct);
     }
 
-    public BigDecimal getNewOrderArea() {
+    public void getNewOrderArea() {
+        BigDecimal newOrderArea;
         // Get Area for Order
         Double userAreaEnteredDouble = io.readDouble("Enter the total Area in sq/ft required for the Order (must be 100 sq/ft or GREATER): ", 100.00, Double.POSITIVE_INFINITY);
         String userAreaEnteredString = String.valueOf(userAreaEnteredDouble);
-        return new BigDecimal(userAreaEnteredString).setScale(4, RoundingMode.HALF_UP);
+        newOrderArea = new BigDecimal(userAreaEnteredString).setScale(4, RoundingMode.HALF_UP);
+        newOrder.setArea(newOrderArea);
     }
 
-    public boolean confirmOrder(BigDecimal newOrderTotal) {
-        io.print("The total cost for the Order is: $" + newOrderTotal);
+    public boolean confirmOrder(Order newOrder) {
+        io.print("The total cost for the Order is: $" + newOrder.getTotalCost());
         boolean keepGoing = false;
         boolean decision = false;
         do {

@@ -6,5 +6,7 @@ import java.util.ArrayList;
 
 public interface ProductDao {
 
-    public ArrayList<Product> getAllProducts() throws FlooringMasteryPersistenceException;
+    ArrayList<Product> getAllProducts() throws FlooringMasteryPersistenceException;
+
+    Product getIndividualProduct(String productType) throws FlooringMasteryPersistenceException;
 }

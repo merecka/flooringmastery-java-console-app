@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.math.BigDecimal;
-import java.sql.Array;
 import java.util.*;
 
 public class TaxDaoFileImpl implements TaxDao {
@@ -22,15 +21,19 @@ public class TaxDaoFileImpl implements TaxDao {
         return new ArrayList<>(taxes.values());
     }
 
+    public Tax getIndividualTax(String stateAbbrev) throws FlooringMasteryPersistenceException {
+        loadTaxes();
+        return taxes.get(stateAbbrev);
+    }
+
     private void loadTaxes() throws FlooringMasteryPersistenceException {
         Scanner scanner;
-        String taxesFileName = TAXES_FILE;
 
         try {
             // Create Scanner for reading the file
             scanner = new Scanner(
                     new BufferedReader(
-                            new FileReader(taxesFileName)));
+                            new FileReader(TAXES_FILE)));
         } catch (FileNotFoundException e) {
             throw new FlooringMasteryPersistenceException(
                     "-_- Could not load Taxes data into memory.", e);
@@ -69,9 +72,7 @@ public class TaxDaoFileImpl implements TaxDao {
         String stateName = taxTokens[1];
         BigDecimal taxRate = new BigDecimal(taxTokens[2]);
 
-        Tax newTaxFromFile = new Tax(stateAbbreviation, stateName, taxRate);
-
         // Return new Order
-        return newTaxFromFile;
+        return new Tax(stateAbbreviation, stateName, taxRate);
     }
 }
