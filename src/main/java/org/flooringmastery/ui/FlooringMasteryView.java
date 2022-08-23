@@ -204,12 +204,14 @@ public class FlooringMasteryView {
         // Get Area for Order
         Double userAreaEnteredDouble = io.readDouble("Enter the total Area in sq/ft required for the Order (must be 100 sq/ft or GREATER): ", 100.00, Double.POSITIVE_INFINITY);
         String userAreaEnteredString = String.valueOf(userAreaEnteredDouble);
-        newOrderArea = new BigDecimal(userAreaEnteredString).setScale(4, RoundingMode.HALF_UP);
+        newOrderArea = new BigDecimal(userAreaEnteredString).setScale(2, RoundingMode.HALF_UP);
         newOrder.setArea(newOrderArea);
     }
 
-    public boolean confirmOrder(Order newOrder) {
-        io.print("Here are the revised Order details:");
+    public boolean confirmOrderEdits(Order newOrder, boolean isEdit) {
+        String userConfirmSelection;
+
+        io.print("Here are the Order details:");
         io.print("Customer Name: " + newOrder.getCustomerName());
         io.print("State: " + newOrder.getTax().getStateName());
         io.print("Product: " + newOrder.getProduct().getProductType());
@@ -218,9 +220,14 @@ public class FlooringMasteryView {
         boolean keepGoing = false;
         boolean decision = false;
         do {
-            String userConfirmSelection = io.readString("Would you like to submit the order?  Type 'Y' for Yes or 'N' for No");
+            if (isEdit) {
+                userConfirmSelection = io.readString("Would you like to submit the order?  Type 'Y' for Yes or 'N' for No");
+            } else {
+                userConfirmSelection = io.readString("Would you like to delete the order?  Type 'Y' for Yes or 'N' for No");
+            }
+
             if (userConfirmSelection.equalsIgnoreCase("y")) {
-                io.print("Order created successfully.");
+                io.print("Order details submitted successfully.");
                 decision = true;
                 keepGoing = false;
             } else if (userConfirmSelection.equalsIgnoreCase("n")) {
@@ -234,8 +241,6 @@ public class FlooringMasteryView {
     }
 
     public LocalDate getEditOrderDate() {
-        io.print("* * * * Edit Order * * * * * * *");
-        io.print("");
         String editOrderDateString;
 
         // Get edit Order date
@@ -248,19 +253,13 @@ public class FlooringMasteryView {
                 keepGoing = true;
                 continue;
             }
-
-            if (checkIsFutureDate((editOrderDateString))) {
-                keepGoing = false;
-            } else {
-                keepGoing = true;
-            }
         } while (keepGoing);
 
         return LocalDate.parse(editOrderDateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
     }
 
     public int getEditOrderNumber() {
-        return io.readInt("Please enter the Order number you wish to edit.", 1, 99999999);
+        return io.readInt("Please enter the Order number.", 1, 99999999);
     }
 
     public void getEditOrderCustomerName(Order editedOrder) {
@@ -377,6 +376,16 @@ public class FlooringMasteryView {
                 keepGoing = true;
             }
         } while (keepGoing);
+    }
+
+    public void displayEditOrderBanner() {
+        io.print("* * * * Edit Order * * * * * * *");
+        io.print("");
+    }
+
+    public void displayRemoveOrderBanner() {
+        io.print("* * * * Remove Order * * * * * * *");
+        io.print("");
     }
 
     public void displayErrorMessage(String errorMsg) {

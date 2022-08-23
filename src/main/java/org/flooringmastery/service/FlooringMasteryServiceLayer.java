@@ -67,7 +67,8 @@ public class FlooringMasteryServiceLayer {
         if (allOrders.size() == 0) {
             newOrder.setOrderNumber(1);
         } else {
-            newOrder.setOrderNumber(allOrders.size() + 1);
+            int maxOrderNumber = allOrders.get(allOrders.size() - 1).getOrderNumber();
+            newOrder.setOrderNumber(maxOrderNumber + 1);
         }
     }
 
@@ -87,5 +88,9 @@ public class FlooringMasteryServiceLayer {
 
     public void replaceEditedOrder(Order editedOrder) throws FlooringMasteryPersistenceException {
         orderDao.addOrder(editedOrder);
+    }
+
+    public void removeDeletedOrder(Order deletedOrder) throws FlooringMasteryPersistenceException {
+        orderDao.removeOrder(deletedOrder);
     }
 }

@@ -42,6 +42,13 @@ public class OrderDaoFileImpl implements OrderDao {
         writeOrder(ordersFileName);
     }
 
+    public void removeOrder(Order deletedOrder) throws FlooringMasteryPersistenceException {
+        orders.remove(deletedOrder.getOrderNumber());
+        String formattedDate = deletedOrder.getOrderDate().format(DateTimeFormatter.ofPattern("MMddyyyy"));
+        String ordersFileName = "orders/Orders_" + formattedDate + ".txt";
+        writeOrder(ordersFileName);
+    }
+
     private boolean loadOrders(String orderDate) throws FlooringMasteryPersistenceException {
         orders = new HashMap<>();
         Scanner scanner = null;
@@ -169,11 +176,6 @@ public class OrderDaoFileImpl implements OrderDao {
     }
 
     private void writeOrder(String orderFileName) throws FlooringMasteryPersistenceException {
-        // NOTE FOR APPRENTICES: We are not handling the IOException - but
-        // we are translating it to an application specific exception and
-        // then simple throwing it (i.e. 'reporting' it) to the code that
-        // called us.  It is the responsibility of the calling code to
-        // handle any errors that occur.
         PrintWriter out;
 
         try {

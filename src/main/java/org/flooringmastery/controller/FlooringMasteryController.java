@@ -42,7 +42,7 @@ public class FlooringMasteryController {
                     editOrder();
                     break;
                 case 4:
-//                    deleteOrder();
+                    deleteOrder();
                     break;
                 case 5:
                     System.out.println("Feature not enabled yet.");
@@ -63,7 +63,7 @@ public class FlooringMasteryController {
 
     private void displayOrders() throws FlooringMasteryPersistenceException {
         String orderDateToDisplayString = view.displayOrdersPrompt();
-        List<Order> allOrders =  service.allOrdersForDate(orderDateToDisplayString);
+        List<Order> allOrders = service.allOrdersForDate(orderDateToDisplayString);
         view.displayAllOrders(allOrders, orderDateToDisplayString);
     }
 
@@ -84,7 +84,7 @@ public class FlooringMasteryController {
         service.calculateTotalOrderCost(newOrder);
 
         // Confirm Order purchase with User
-        boolean newOrderConfirmation = view.confirmOrder(newOrder);
+        boolean newOrderConfirmation = view.confirmOrderEdits(newOrder, true);
 
         if (newOrderConfirmation == false) {
             return;   // Cancel the Order and return to main menu
@@ -98,6 +98,7 @@ public class FlooringMasteryController {
     }
 
     public void editOrder() throws FlooringMasteryPersistenceException {
+        view.displayEditOrderBanner();
         // Locate Order to Edit
         LocalDate editOrderDate = view.getEditOrderDate();
         int editOrderNumber = view.getEditOrderNumber();
@@ -129,7 +130,7 @@ public class FlooringMasteryController {
         service.calculateTotalOrderCost(orderToEdit);
 
         // Confirm Order purchase with User
-        boolean newOrderConfirmation = view.confirmOrder(orderToEdit);
+        boolean newOrderConfirmation = view.confirmOrderEdits(orderToEdit, true);
 
         if (newOrderConfirmation == false) {
             return;   // Cancel the Order edit and return to main menu
@@ -137,6 +138,29 @@ public class FlooringMasteryController {
 
         //Persist the edited Order
         service.replaceEditedOrder(orderToEdit);
+    }
+
+    public void deleteOrder() throws FlooringMasteryPersistenceException {
+        view.displayRemoveOrderBanner();
+        // Locate Order to Delete
+        LocalDate editOrderDate = view.getEditOrderDate();
+        int editOrderNumber = view.getEditOrderNumber();
+        Order orderToDelete = service.retrieveOrderToEdit(editOrderNumber, editOrderDate);
+
+        if (Objects.isNull(orderToDelete)) {
+            view.displayErrorMessage("No order exists with this criteria.");
+            return;
+        }
+
+        // Confirm Order deletion with User
+        boolean newOrderConfirmation = view.confirmOrderEdits(orderToDelete, false);
+
+        if (newOrderConfirmation == false) {
+            return;   // Cancel the Order deletion and return to main menu
+        }
+
+        //Persist the deleted Order
+        service.removeDeletedOrder(orderToDelete);
     }
 
     private void exitMessage() {
