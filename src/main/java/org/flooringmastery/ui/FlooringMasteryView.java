@@ -3,6 +3,8 @@ package org.flooringmastery.ui;
 import org.flooringmastery.dto.Order;
 import org.flooringmastery.dto.Product;
 import org.flooringmastery.dto.Tax;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Component
 public class FlooringMasteryView {
 
     private UserIO io;
@@ -21,6 +24,7 @@ public class FlooringMasteryView {
 
     public final String DATE_FORMAT = "MM/dd/yyyy";
 
+    @Autowired
     public FlooringMasteryView(UserIO userIO) {
         this.io = userIO;
     }

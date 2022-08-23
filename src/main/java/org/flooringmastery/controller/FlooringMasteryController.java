@@ -6,18 +6,22 @@ import org.flooringmastery.dto.Product;
 import org.flooringmastery.dto.Tax;
 import org.flooringmastery.service.FlooringMasteryServiceLayer;
 import org.flooringmastery.ui.FlooringMasteryView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+@Component
 public class FlooringMasteryController {
 
     private FlooringMasteryView view;
 
     private FlooringMasteryServiceLayer service;
 
+    @Autowired
     public FlooringMasteryController(FlooringMasteryView view, FlooringMasteryServiceLayer service) {
         this.view = view;
         this.service = service;

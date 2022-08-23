@@ -1,5 +1,8 @@
 package org.flooringmastery.dto;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -24,6 +27,7 @@ public class Order {
 
     private BigDecimal totalCost;
 
+    @Autowired
     public Order() {}
 
     public Tax getTax() {

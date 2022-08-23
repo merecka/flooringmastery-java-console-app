@@ -1,6 +1,7 @@
 package org.flooringmastery.dao;
 
 import org.flooringmastery.dto.Tax;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -8,6 +9,7 @@ import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.*;
 
+@Component
 public class TaxDaoFileImpl implements TaxDao {
 
     private final String DELIMITER = ",";
