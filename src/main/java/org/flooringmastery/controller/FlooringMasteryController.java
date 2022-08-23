@@ -103,8 +103,13 @@ public class FlooringMasteryController {
         int editOrderNumber = view.getEditOrderNumber();
         Order orderToEdit = service.retrieveOrderToEdit(editOrderNumber, editOrderDate);
 
+        if (Objects.isNull(orderToEdit)) {
+            view.displayErrorMessage("No order exists with this criteria.");
+            return;
+        }
+
         // Edit Customer Name
-        view.getNewOrderCustomerName(orderToEdit);
+        view.getEditOrderCustomerName(orderToEdit);
 
         // Edit Tax State for Order
         List<Tax> allTaxes = service.getAllTaxes();

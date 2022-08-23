@@ -75,9 +75,14 @@ public class FlooringMasteryServiceLayer {
         orderDao.addOrder(newOrder);
     }
 
-    public Order retrieveOrderToEdit(int orderNumber, LocalDate orderDate) throws FlooringMasteryPersistenceException {
-        String formattedDate = orderDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-        return orderDao.getOrder(formattedDate, orderNumber);
+    public Order retrieveOrderToEdit(int orderNumber, LocalDate orderDate) throws FlooringMasteryPersistenceException, NullPointerException {
+        try {
+            String formattedDate = orderDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+            return orderDao.getOrder(formattedDate, orderNumber);
+        } catch (FlooringMasteryPersistenceException | NullPointerException e) {
+            return null;
+        }
+
     }
 
     public void replaceEditedOrder(Order editedOrder) throws FlooringMasteryPersistenceException {

@@ -174,8 +174,8 @@ public class FlooringMasteryView {
                     ++countStates,
                     tax.getStateName());
             io.print(states);
-            io.print("");
         }
+        io.print("");
         userStateSelectionInt = io.readInt("Please select the State for the Order from the following States:", 1, countStates);
         newOrderTax = allTaxes.get(--userStateSelectionInt);
         newOrder.setTax(newOrderTax);
@@ -192,8 +192,8 @@ public class FlooringMasteryView {
                     ++countProducts,
                     product.getProductType());
             io.print(products);
-            io.print("");
         }
+        io.print("");
         userProductSelectionInt = io.readInt("Please select from the following Products:", 1, countProducts);
         newOrderProduct = allProducts.get(--userProductSelectionInt);
         newOrder.setProduct(newOrderProduct);
@@ -253,7 +253,6 @@ public class FlooringMasteryView {
                 keepGoing = false;
             } else {
                 keepGoing = true;
-                continue;
             }
         } while (keepGoing);
 
@@ -264,7 +263,7 @@ public class FlooringMasteryView {
         return io.readInt("Please enter the Order number you wish to edit.", 1, 99999999);
     }
 
-    public void getNewOrderCustomerName(Order editedOrder) {
+    public void getEditOrderCustomerName(Order editedOrder) {
         // Get Customer name
         String newOrderCustomerName;
         boolean keepGoing = false;
@@ -278,7 +277,7 @@ public class FlooringMasteryView {
             }
         } while (keepGoing);
         if (newOrderCustomerName.equals("")) {
-            return;
+            io.print("No selection made.  Will keep current Name for Order.");
         } else {
             editedOrder.setCustomerName(newOrderCustomerName);
         }
@@ -297,8 +296,8 @@ public class FlooringMasteryView {
                         ++countStates,
                         tax.getStateName());
                 io.print(states);
-                io.print("");
             }
+            io.print("");
             io.print("Current Order State is: " + orderToEdit.getTax().getStateName());
             userStateSelectionString = io.readString("Please select the State for the Order from the following States:");
             try {
@@ -331,8 +330,8 @@ public class FlooringMasteryView {
                         ++countProducts,
                         product.getProductType());
                 io.print(products);
-                io.print("");
             }
+            io.print("");
             io.print("Current Order Product is: " + orderToEdit.getProduct().getProductType());
             userProductSelectionString = io.readString("Please select from the following Products:");
             try {
@@ -352,14 +351,32 @@ public class FlooringMasteryView {
         } while (keepGoing);
     }
 
-    public void getEditOrderArea(Order orderToEdit) {
-        BigDecimal newOrderArea;
-        io.print("Current Order Area is: " + orderToEdit.getArea() + " sq/ft");
+    public void getEditOrderArea(Order orderToEdit) throws NumberFormatException {
+        boolean keepGoing = false;
+        BigDecimal areaMin = new BigDecimal("100");
+
+        do {
+            io.print("Current Order Area is: " + orderToEdit.getArea() + " sq/ft");
             // Get Area for Order
-            Double userAreaEnteredDouble = io.readDouble("Enter the total Area in sq/ft required for the Order (must be 100 sq/ft or GREATER): ", 100.00, Double.POSITIVE_INFINITY);
-            String userAreaEnteredString = String.valueOf(userAreaEnteredDouble);
-            newOrderArea = new BigDecimal(userAreaEnteredString).setScale(2, RoundingMode.HALF_UP);
-            orderToEdit.setArea(newOrderArea);
+            String userAreaEnteredString = io.readString("Enter the total Area in sq/ft required for the Order (must be 100 sq/ft or GREATER): ");
+            if (userAreaEnteredString.equals("")) {
+                io.print("No selection made.  Will keep current Area for Order.");
+                return;
+            }
+            try{
+                BigDecimal newOrderArea = new BigDecimal(userAreaEnteredString).setScale(2, RoundingMode.HALF_UP);
+                if (newOrderArea.compareTo(areaMin) == -1) {
+                    io.print("Area must be 100 sq/ft or GREATER.");
+                    keepGoing = true;
+                } else {
+                    orderToEdit.setArea(newOrderArea);
+                    keepGoing = false;
+                }
+            } catch (NumberFormatException e) {
+                io.print("Input must be a numerical value (ex: 200.00)");
+                keepGoing = true;
+            }
+        } while (keepGoing);
     }
 
     public void displayErrorMessage(String errorMsg) {

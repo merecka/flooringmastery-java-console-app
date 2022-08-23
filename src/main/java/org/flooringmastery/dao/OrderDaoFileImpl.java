@@ -35,12 +35,11 @@ public class OrderDaoFileImpl implements OrderDao {
         return orders.get(orderNumber);
     }
 
-    public Order addOrder(Order newOrder) throws FlooringMasteryPersistenceException {
+    public void addOrder(Order newOrder) throws FlooringMasteryPersistenceException {
         String formattedDate = newOrder.getOrderDate().format(DateTimeFormatter.ofPattern("MMddyyyy"));
         orders.put(newOrder.getOrderNumber(), newOrder);
         String ordersFileName = "orders/Orders_" + formattedDate + ".txt";
         writeOrder(ordersFileName);
-        return newOrder;
     }
 
     private boolean loadOrders(String orderDate) throws FlooringMasteryPersistenceException {
@@ -203,8 +202,4 @@ public class OrderDaoFileImpl implements OrderDao {
         // Clean up
         out.close();
     }
-
-//    public Order retrieveOrder(int orderNumber, String orderDate) {
-//        loadOrders(orderDate);
-//    }
 }
