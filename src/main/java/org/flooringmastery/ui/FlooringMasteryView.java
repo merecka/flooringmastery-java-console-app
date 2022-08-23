@@ -36,7 +36,7 @@ public class FlooringMasteryView {
         io.print("* 6. Quit");
         io.print("");
 
-        return io.readInt("Please select from the above six Options (1-6).", 1, 6);
+        return io.readInt("Please select from the above six Options (1-6).");
     }
 
     public String displayOrdersPrompt() {

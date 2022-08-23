@@ -51,7 +51,7 @@ public class FlooringMasteryController {
                     keepGoing = false;
                     break;
                 default:
-//                    unknownCommand();
+                    unknownCommand();
             }
         }
         exitMessage();
@@ -161,6 +161,10 @@ public class FlooringMasteryController {
 
         //Persist the deleted Order
         service.removeDeletedOrder(orderToDelete);
+    }
+
+    private void unknownCommand() {
+        view.displayErrorMessage("You must select from one of the available options.");
     }
 
     private void exitMessage() {
