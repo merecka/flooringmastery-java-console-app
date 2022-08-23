@@ -77,7 +77,10 @@ public class FlooringMasteryServiceLayer {
 
     public Order retrieveOrderToEdit(int orderNumber, LocalDate orderDate) throws FlooringMasteryPersistenceException {
         String formattedDate = orderDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-        List<Order> allOrdersForEditDate = orderDao.getAllOrders(formattedDate);
-        return allOrdersForEditDate.stream().filter(order -> order.getOrderNumber() == orderNumber).findAny().get();
+        return orderDao.getOrder(formattedDate, orderNumber);
+    }
+
+    public void replaceEditedOrder(Order editedOrder) throws FlooringMasteryPersistenceException {
+        orderDao.addOrder(editedOrder);
     }
 }

@@ -34,6 +34,7 @@ public class FlooringMasteryView {
         io.print("* 4. Remove an Order");
         io.print("* 5. Export All Data");
         io.print("* 6. Quit");
+        io.print("");
 
         return io.readInt("Please select from the above six Options (1-6).", 1, 6);
     }
@@ -173,6 +174,7 @@ public class FlooringMasteryView {
                     ++countStates,
                     tax.getStateName());
             io.print(states);
+            io.print("");
         }
         userStateSelectionInt = io.readInt("Please select the State for the Order from the following States:", 1, countStates);
         newOrderTax = allTaxes.get(--userStateSelectionInt);
@@ -190,6 +192,7 @@ public class FlooringMasteryView {
                     ++countProducts,
                     product.getProductType());
             io.print(products);
+            io.print("");
         }
         userProductSelectionInt = io.readInt("Please select from the following Products:", 1, countProducts);
         newOrderProduct = allProducts.get(--userProductSelectionInt);
@@ -206,6 +209,11 @@ public class FlooringMasteryView {
     }
 
     public boolean confirmOrder(Order newOrder) {
+        io.print("Here are the revised Order details:");
+        io.print("Customer Name: " + newOrder.getCustomerName());
+        io.print("State: " + newOrder.getTax().getStateName());
+        io.print("Product: " + newOrder.getProduct().getProductType());
+        io.print("Area sq/ft: " + newOrder.getArea());
         io.print("The total cost for the Order is: $" + newOrder.getTotalCost());
         boolean keepGoing = false;
         boolean decision = false;
@@ -256,10 +264,30 @@ public class FlooringMasteryView {
         return io.readInt("Please enter the Order number you wish to edit.", 1, 99999999);
     }
 
-    public Tax getEditOrderTax(List<Tax> allTaxes) throws NullPointerException, NumberFormatException {
+    public void getNewOrderCustomerName(Order editedOrder) {
+        // Get Customer name
+        String newOrderCustomerName;
+        boolean keepGoing = false;
+        do {
+            io.print("Current Order Customer Name is: " + editedOrder.getCustomerName());
+            newOrderCustomerName = io.readString("Enter the Customer name for the order.").trim();
+            if (checkValidCustomerNameFormat(newOrderCustomerName, true)) {
+                keepGoing = false;
+            } else {
+                keepGoing = true;
+            }
+        } while (keepGoing);
+        if (newOrderCustomerName.equals("")) {
+            return;
+        } else {
+            editedOrder.setCustomerName(newOrderCustomerName);
+        }
+    }
+
+    public void getEditOrderTax(List<Tax> allTaxes, Order orderToEdit) throws NullPointerException, NumberFormatException {
         String userStateSelectionString;
         boolean keepGoing = false;
-        Tax editedTax = null;
+        Tax selectedTax = null;
 
         do {
             // Get State for Order
@@ -269,7 +297,9 @@ public class FlooringMasteryView {
                         ++countStates,
                         tax.getStateName());
                 io.print(states);
+                io.print("");
             }
+            io.print("Current Order State is: " + orderToEdit.getTax().getStateName());
             userStateSelectionString = io.readString("Please select the State for the Order from the following States:");
             try {
                 int userStateSelectionInt = Integer.parseInt(userStateSelectionString);
@@ -277,14 +307,59 @@ public class FlooringMasteryView {
                     io.print("You must either make a selection from the list or hit Enter to keep the existing State.");
                     keepGoing = true;
                 } else {
-                    editedTax = allTaxes.get(--userStateSelectionInt);
+                    selectedTax = allTaxes.get(--userStateSelectionInt);
+                    orderToEdit.setTax(selectedTax);
                     keepGoing = false;
                 }
             } catch (NullPointerException | NumberFormatException e) {
+                io.print("No selection made.  Will keep current State for Order.");
                 keepGoing = false;
             }
         } while (keepGoing);
-        return editedTax;
+    }
+
+    public void getEditOrderProduct(List<Product> allProducts, Order orderToEdit) {
+        String userProductSelectionString;
+        Product selectedProduct;
+        boolean keepGoing = false;
+
+        do {
+            // Get Product for Order
+            int countProducts = 0;
+            for (Product product : allProducts) {
+                String products = String.format("%s. %s",
+                        ++countProducts,
+                        product.getProductType());
+                io.print(products);
+                io.print("");
+            }
+            io.print("Current Order Product is: " + orderToEdit.getProduct().getProductType());
+            userProductSelectionString = io.readString("Please select from the following Products:");
+            try {
+                int userProductSelectionInt = Integer.parseInt(userProductSelectionString);
+                if (userProductSelectionInt < 1 || userProductSelectionInt > allProducts.size()) {
+                    io.print("You must either make a selection from the list or hit Enter to keep the existing Product.");
+                    keepGoing = true;
+                } else {
+                    selectedProduct = allProducts.get(--userProductSelectionInt);
+                    orderToEdit.setProduct(selectedProduct);
+                    keepGoing = false;
+                }
+            } catch (NullPointerException | NumberFormatException e) {
+                io.print("No selection made.  Will keep current Product for Order.");
+                keepGoing = false;
+            }
+        } while (keepGoing);
+    }
+
+    public void getEditOrderArea(Order orderToEdit) {
+        BigDecimal newOrderArea;
+        io.print("Current Order Area is: " + orderToEdit.getArea() + " sq/ft");
+            // Get Area for Order
+            Double userAreaEnteredDouble = io.readDouble("Enter the total Area in sq/ft required for the Order (must be 100 sq/ft or GREATER): ", 100.00, Double.POSITIVE_INFINITY);
+            String userAreaEnteredString = String.valueOf(userAreaEnteredDouble);
+            newOrderArea = new BigDecimal(userAreaEnteredString).setScale(2, RoundingMode.HALF_UP);
+            orderToEdit.setArea(newOrderArea);
     }
 
     public void displayErrorMessage(String errorMsg) {

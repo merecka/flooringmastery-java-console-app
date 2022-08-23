@@ -9,4 +9,6 @@ public interface OrderDao {
     List<Order> getAllOrders(String orderDate) throws FlooringMasteryPersistenceException;
 
     Order addOrder(Order newOrder) throws FlooringMasteryPersistenceException;
+
+    Order getOrder(String orderDate, int orderNumber) throws FlooringMasteryPersistenceException;
 }

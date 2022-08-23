@@ -6,6 +6,7 @@ import org.flooringmastery.dto.Tax;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -28,6 +29,12 @@ public class OrderDaoFileImpl implements OrderDao {
         }
     }
 
+    public Order getOrder(String orderDate, int orderNumber) throws FlooringMasteryPersistenceException {
+        String orderDateFormatted = orderDate.replace("/", "");
+        loadOrders(orderDateFormatted);
+        return orders.get(orderNumber);
+    }
+
     public Order addOrder(Order newOrder) throws FlooringMasteryPersistenceException {
         String formattedDate = newOrder.getOrderDate().format(DateTimeFormatter.ofPattern("MMddyyyy"));
         orders.put(newOrder.getOrderNumber(), newOrder);
@@ -40,6 +47,9 @@ public class OrderDaoFileImpl implements OrderDao {
         orders = new HashMap<>();
         Scanner scanner = null;
         String ordersFileName = "orders/Orders_" + orderDate + ".txt";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMddyyyy");
+        LocalDate localDateOrderDate = LocalDate.parse(orderDate, dateFormatter);
+
         boolean wasSuccessful = true;
         try {
             // Create Scanner for reading the file
@@ -68,7 +78,7 @@ public class OrderDaoFileImpl implements OrderDao {
                 // get the next line in the file
                 currentLine = scanner.nextLine();
                 // unmarshall the line into a Student
-                currentOrder = unmarshallOrder(currentLine);
+                currentOrder = unmarshallOrder(currentLine, localDateOrderDate);
 
                 // We are going to use the student id as the map key for our student object.
                 // Put currentStudent into the map using student id as the key
@@ -81,14 +91,8 @@ public class OrderDaoFileImpl implements OrderDao {
     }
 
     private String marshallOrder(Order anOrder){
-        // We need to turn a Student object into a line of text for our file.
-        // For example, we need an in memory object to end up like this:
-        // 4321::Charles::Babbage::Java-September1842
+        // Turn an Order object into a line of text for our file.
 
-        // It's not a complicated process. Just get out each property,
-        // and concatenate with our DELIMITER as a kind of spacer.
-
-        // Start with the student id, since that's supposed to be first.
         String orderAsText = anOrder.getOrderNumber() + DELIMITER;
 
         // add the rest of the properties in the correct order:
@@ -130,18 +134,10 @@ public class OrderDaoFileImpl implements OrderDao {
         return orderAsText;
     }
 
-    private Order unmarshallOrder(String orderAsText) throws FlooringMasteryPersistenceException {
+    private Order unmarshallOrder(String orderAsText, LocalDate orderDate) throws FlooringMasteryPersistenceException {
         // Creates Order from String
-        // Parses Item into String Array like the following:
-        // id::name::count::price
-        //
-        // Example
-        // ____________________________
-        // |     |        |    |      |
-        // | 0001|Twinkies| 10 | 1.50 |
-        // |     |        |    |      |
-        // ----------------------------
-        //  [0]      [1]   [2]    [3]
+        // Parses Order into String Array
+
         String[] orderTokens = orderAsText.split(DELIMITER);
 
         int orderNumber = Integer.parseInt(orderTokens[0]);
@@ -157,8 +153,8 @@ public class OrderDaoFileImpl implements OrderDao {
         Tax newOrderTax = taxDao.getIndividualTax(stateAbbrev);
         Product newOrderProduct = productDao.getIndividualProduct(productType);
 
-
         Order newOrderFromFile = new Order();
+        newOrderFromFile.setOrderDate(orderDate);
         newOrderFromFile.setOrderNumber(orderNumber);
         newOrderFromFile.setCustomerName(customerName);
         newOrderFromFile.setTax(newOrderTax);
