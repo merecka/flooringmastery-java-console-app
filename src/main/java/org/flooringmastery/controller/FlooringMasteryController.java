@@ -7,7 +7,10 @@ import org.flooringmastery.dto.Tax;
 import org.flooringmastery.service.FlooringMasteryServiceLayer;
 import org.flooringmastery.ui.FlooringMasteryView;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 public class FlooringMasteryController {
 
@@ -36,7 +39,7 @@ public class FlooringMasteryController {
                     addOrder();
                     break;
                 case 3:
-//                    editOrder();
+                    editOrder();
                     break;
                 case 4:
 //                    deleteOrder();
@@ -65,7 +68,6 @@ public class FlooringMasteryController {
     }
 
     private void addOrder() throws FlooringMasteryPersistenceException {
-        int newOrderNumber;
         boolean isEditOrder = false;
 
         // Retrieve info for new Order
@@ -95,60 +97,47 @@ public class FlooringMasteryController {
         service.createOrder(newOrder);
     }
 
-//    public void editOrder() throws FlooringMasteryPersistenceException {
-//        // Retrieve info for the Order
-//        boolean isEditOrder = true;
-//        List<Tax> allTaxes = service.getAllTaxes();
-//        List<Product> allProducts = service.getAllProducts();
-//        LocalDate editOrderDate = view.getEditOrderDate();
-//        int editOrderNumber = view.getEditOrderNumber();
-//        Order orderToEdit = service.retrieveOrderToEdit(editOrderNumber, editOrderDate);
-//
-//        String editedCustomerName = view.getNewOrderCustomerName(isEditOrder);
-//        if (editedCustomerName.equals("")) {
-//            editedCustomerName = orderToEdit.getCustomerName();
-//        }
+    public void editOrder() throws FlooringMasteryPersistenceException {
+        // Locate Order to Edit
+        LocalDate editOrderDate = view.getEditOrderDate();
+        int editOrderNumber = view.getEditOrderNumber();
+        Order orderToEdit = service.retrieveOrderToEdit(editOrderNumber, editOrderDate);
 
-//        Tax editedOrderTax = view.getEditOrderTax(allTaxes);
-//        if (Objects.isNull(editedOrderTax)) {
-//            editedOrderTax = orderToEdit.get();
-//        }
-//        Product newOrderProduct = view.getNewOrderProduct(allProducts);
-//        BigDecimal newOrderArea = view.getNewOrderArea();
-//        BigDecimal newOrderMaterialCost = service.calculateOrderMaterialCost(newOrderArea, newOrderProduct);
-//        BigDecimal newOrderLaborCost = service.calculateOrderLaborCost(newOrderArea, newOrderProduct);
-//        BigDecimal newOrderTaxCost = service.calculateOrderTax(newOrderTax, newOrderMaterialCost, newOrderLaborCost);
-//        BigDecimal newOrderTotal = service.calculateTotalOrderCost(newOrderTaxCost, newOrderMaterialCost, newOrderLaborCost);
-//        newOrderNumber = service.getNewOrderNumber(newOrderDate);
-//        if (newOrderNumber == 0) {
-//            newOrderNumber = 1;
-//        }
+        if (Objects.isNull(orderToEdit)) {
+            view.displayErrorMessage("No order exists with this criteria.");
+            return;
+        }
+
+        // Edit Customer Name
+        view.getEditOrderCustomerName(orderToEdit);
+
+        // Edit Tax State for Order
+        List<Tax> allTaxes = service.getAllTaxes();
+        view.getEditOrderTax(allTaxes, orderToEdit);
+
+        // Edit Product for Order
+        List<Product> allProducts = service.getAllProducts();
+        view.getEditOrderProduct(allProducts, orderToEdit);
+
+        // Edit Area for Order
+        view.getEditOrderArea(orderToEdit);
+
+        // Calculate Order totals
+        service.calculateOrderMaterialCost(orderToEdit);
+        service.calculateOrderLaborCost(orderToEdit);
+        service.calculateOrderTax(orderToEdit);
+        service.calculateTotalOrderCost(orderToEdit);
 
         // Confirm Order purchase with User
-//        boolean newOrderConfirmation = view.confirmOrder(newOrderTotal);
+        boolean newOrderConfirmation = view.confirmOrder(orderToEdit);
 
-//        if (newOrderConfirmation == false) {
-//            return;   // Cancel the Order and return to main menu
-//        }
+        if (newOrderConfirmation == false) {
+            return;   // Cancel the Order edit and return to main menu
+        }
 
-        // Create new Order object
-//        Order newOrder = new Order(newOrderNumber);
-//        newOrder.setOrderDate(newOrderDate);
-//        newOrder.setCustomerName(newOrderCustomerName);
-//        newOrder.setState(newOrderTax.getStateAbbreviation());
-//        newOrder.setTaxRate(newOrderTax.getTaxRate());
-//        newOrder.setProductType(newOrderProduct.getProductType());
-//        newOrder.setArea(newOrderArea);
-//        newOrder.setCostPerSquareFoot(newOrderProduct.getCostPerSquareFoot());
-//        newOrder.setLaborCostPerSquareFoot(newOrderProduct.getLaborCostPerSquareFoot());
-//        newOrder.setMaterialCost(newOrderMaterialCost);
-//        newOrder.setLaborCost(newOrderLaborCost);
-//        newOrder.setTax(newOrderTaxCost);
-//        newOrder.setTotal(newOrderTotal);
-
-        // Persist the new Order
-//        service.createOrder(newOrder);
-//    }
+        //Persist the edited Order
+        service.replaceEditedOrder(orderToEdit);
+    }
 
     private void exitMessage() {
         view.displayExitBanner();

@@ -1,0 +1,2 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
+1,William,WA,9.25,Carpet,300.00,2.25,2.10,675.00,630.00,117.45,1422.45
