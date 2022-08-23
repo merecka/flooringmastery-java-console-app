@@ -3,6 +3,8 @@ package org.flooringmastery.dao;
 import org.flooringmastery.dto.Order;
 import org.flooringmastery.dto.Product;
 import org.flooringmastery.dto.Tax;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -10,14 +12,17 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+@Component
 public class OrderDaoFileImpl implements OrderDao {
 
     private final String DELIMITER = ",";
 
     private Map<Integer, Order> orders = new HashMap<>();
 
+    @Autowired
     private TaxDao taxDao = new TaxDaoFileImpl();
 
+    @Autowired
     private ProductDao productDao = new ProductDaoFileImpl();
 
     public List<Order> getAllOrders(String orderDate) throws FlooringMasteryPersistenceException {

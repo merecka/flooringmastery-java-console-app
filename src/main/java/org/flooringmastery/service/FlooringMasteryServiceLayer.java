@@ -7,6 +7,8 @@ import org.flooringmastery.dao.TaxDao;
 import org.flooringmastery.dto.Order;
 import org.flooringmastery.dto.Product;
 import org.flooringmastery.dto.Tax;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -14,6 +16,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Component
 public class FlooringMasteryServiceLayer {
 
     private OrderDao orderDao;
@@ -22,6 +25,7 @@ public class FlooringMasteryServiceLayer {
 
     private ProductDao productDao;
 
+    @Autowired
     public FlooringMasteryServiceLayer(OrderDao orderDao, TaxDao taxDao, ProductDao productDao) {
         this.orderDao = orderDao;
         this.taxDao = taxDao;
