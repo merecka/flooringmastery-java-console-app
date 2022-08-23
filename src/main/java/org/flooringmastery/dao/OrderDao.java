@@ -11,4 +11,6 @@ public interface OrderDao {
     void addOrder(Order newOrder) throws FlooringMasteryPersistenceException;
 
     Order getOrder(String orderDate, int orderNumber) throws FlooringMasteryPersistenceException;
+
+    void removeOrder(Order deletedOrder) throws FlooringMasteryPersistenceException;
 }
