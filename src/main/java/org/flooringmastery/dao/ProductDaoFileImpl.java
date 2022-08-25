@@ -13,9 +13,17 @@ import java.util.*;
 public class ProductDaoFileImpl implements ProductDao {
     private final String DELIMITER = ",";
 
-    private final String PRODUCTS_FILE = "data/Products.txt";
+    private final String PRODUCTS_FILE;
 
     private Map<String, Product> products = new HashMap<>();
+
+    public ProductDaoFileImpl() {
+        this.PRODUCTS_FILE = "data/Products.txt";
+    }
+
+    public ProductDaoFileImpl(String productsTextFile) {
+        this.PRODUCTS_FILE = productsTextFile;
+    }
 
     public ArrayList<Product> getAllProducts() throws FlooringMasteryPersistenceException {
         loadProducts();

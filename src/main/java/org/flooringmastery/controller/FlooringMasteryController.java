@@ -8,8 +8,6 @@ import org.flooringmastery.service.FlooringMasteryServiceLayer;
 import org.flooringmastery.ui.FlooringMasteryView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +47,7 @@ public class FlooringMasteryController {
                     deleteOrder();
                     break;
                 case 5:
-                    System.out.println("Feature not enabled yet.");
+                    view.displayErrorMessage("Feature not enabled yet.");
                     break;
                 case 6:
                     keepGoing = false;

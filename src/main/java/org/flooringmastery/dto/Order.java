@@ -1,10 +1,9 @@
 package org.flooringmastery.dto;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Order {
 
@@ -29,6 +28,11 @@ public class Order {
 
     @Autowired
     public Order() {}
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderDate, orderNumber, customerName, tax, product, area, materialCost, laborCost, taxTotal, totalCost);
+    }
 
     public Tax getTax() {
         return tax;
@@ -108,5 +112,29 @@ public class Order {
 
     public void setTotalCost(BigDecimal totalCost) {
         this.totalCost = totalCost;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return orderNumber == order.orderNumber && orderDate.equals(order.orderDate) && customerName.equals(order.customerName) && tax.equals(order.tax) && product.equals(order.product) && area.equals(order.area) && materialCost.equals(order.materialCost) && laborCost.equals(order.laborCost) && taxTotal.equals(order.taxTotal) && totalCost.equals(order.totalCost);
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderDate=" + orderDate +
+                ", orderNumber=" + orderNumber +
+                ", customerName='" + customerName + '\'' +
+                ", tax=" + tax +
+                ", product=" + product +
+                ", area=" + area +
+                ", materialCost=" + materialCost +
+                ", laborCost=" + laborCost +
+                ", taxTotal=" + taxTotal +
+                ", totalCost=" + totalCost +
+                '}';
     }
 }

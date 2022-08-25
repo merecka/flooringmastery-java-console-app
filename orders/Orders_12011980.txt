@@ -1,0 +1,5 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
+1,Alex,TX,4.45,Wood,400,5.15,4.75,2060.00,1900.00,158.40,4118.40
+2,William,WA,9.25,Laminate,350,1.75,2.10,612.50,735.00,121.28,1468.78
+3,Jim,KY,6.00,Tile,550,3.50,4.15,1925.00,2282.50,252.45,4459.95
+4,Bob,CA,25.00,Carpet,560,2.25,2.10,1260.00,1176.00,609.00,3045.00
