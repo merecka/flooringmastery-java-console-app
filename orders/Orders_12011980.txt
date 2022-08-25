@@ -1,0 +1,3 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
+0,Bob,CA,25.00,Carpet,560,2.25,2.10,null,null,null,null
+4,Alex,TX,4.45,Wood,400,5.15,4.75,null,null,null,null

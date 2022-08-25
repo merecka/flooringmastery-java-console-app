@@ -14,11 +14,19 @@ public class TaxDaoFileImpl implements TaxDao {
 
     private final String DELIMITER = ",";
 
-    private final String TAXES_FILE = "data/Taxes.txt";
+    private final String TAXES_FILE;
 
     private Map<String, Tax> taxes = new HashMap<>();
 
-    public List<Tax> getAllTaxes() throws FlooringMasteryPersistenceException {
+    public TaxDaoFileImpl() {
+        this.TAXES_FILE = "data/Taxes.txt";
+    }
+
+    public TaxDaoFileImpl(String taxTextFile) {
+        this.TAXES_FILE = taxTextFile;
+    }
+
+    public ArrayList<Tax> getAllTaxes() throws FlooringMasteryPersistenceException {
         loadTaxes();
         return new ArrayList<>(taxes.values());
     }

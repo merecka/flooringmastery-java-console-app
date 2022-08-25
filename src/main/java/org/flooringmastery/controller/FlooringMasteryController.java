@@ -49,7 +49,7 @@ public class FlooringMasteryController {
                     deleteOrder();
                     break;
                 case 5:
-                    System.out.println("Feature not enabled yet.");
+                    view.displayErrorMessage("Feature not enabled yet.");
                     break;
                 case 6:
                     keepGoing = false;
