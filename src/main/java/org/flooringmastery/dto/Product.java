@@ -1,7 +1,5 @@
 package org.flooringmastery.dto;
 
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.util.Objects;
 

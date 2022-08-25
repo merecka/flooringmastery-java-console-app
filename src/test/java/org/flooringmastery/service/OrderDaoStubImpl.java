@@ -29,13 +29,14 @@ public class OrderDaoStubImpl implements OrderDao {
     Product product3 = new Product("Tile", new BigDecimal("3.50"), new BigDecimal("4.15"));
     Product product4 = new Product("Wood", new BigDecimal("5.15"), new BigDecimal("4.75"));
 
-    Order order1 = new Order();
-    Order order2 = new Order();
-    Order order3 = new Order();
-    Order order4 = new Order();
+    ArrayList<Order> itemList = new ArrayList<>();
 
+    public OrderDaoStubImpl() {
+        Order order1 = new Order();
+        Order order2 = new Order();
+        Order order3 = new Order();
+        Order order4 = new Order();
 
-    public List<Order> getAllOrders(String orderDate) throws FlooringMasteryPersistenceException {
         order1.setOrderDate(localDateOrderDate);
         order1.setOrderNumber(1);
         order1.setProduct(product4);
@@ -67,19 +68,21 @@ public class OrderDaoStubImpl implements OrderDao {
         order4.setCustomerName("Bob");
         order4.setArea(new BigDecimal("560"));
 
-        List<Order> itemList = new ArrayList<>();
         itemList.add(order1);
         itemList.add(order2);
         itemList.add(order3);
         itemList.add(order4);
+    }
+
+    public List<Order> getAllOrders(String orderDate) {
         return itemList;
     }
 
-    public void addOrder(Order newOrder) throws FlooringMasteryPersistenceException {}
+    public void addOrder(Order newOrder) {}
 
-    public Order getOrder(String orderDate, int orderNumber) throws FlooringMasteryPersistenceException {
-        return new Order();
+    public Order getOrder(String orderDate, int orderNumber) {
+        return itemList.get(orderNumber - 1);
     }
 
-    public void removeOrder(Order deletedOrder) throws FlooringMasteryPersistenceException {}
+    public void removeOrder(Order deletedOrder) {}
 }

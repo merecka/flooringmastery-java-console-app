@@ -3,8 +3,6 @@ package org.flooringmastery.dao;
 import org.flooringmastery.dto.Order;
 import org.flooringmastery.dto.Product;
 import org.flooringmastery.dto.Tax;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,8 +38,6 @@ class OrderDaoFileImplTest {
     Order order3 = new Order();
     Order order4 = new Order();
     Order order5 = new Order();
-
-    Order[] testOrders = {order1, order2, order3, order4};
 
     @BeforeEach
     void setUp() throws FlooringMasteryPersistenceException {
